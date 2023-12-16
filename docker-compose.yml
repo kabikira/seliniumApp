@@ -1,4 +1,5 @@
 version: '3'
+
 services:
   web:
     build:
@@ -15,7 +16,8 @@ services:
       DB_PASS: mysql_pass
       DB_NAME: web_logs
     depends_on:
-      - db
+      db:
+        condition: service_healthy
   db:
     image: mysql:5.7
     volumes:
@@ -25,3 +27,8 @@ services:
       MYSQL_DATABASE: web_logs
     ports:
       - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
